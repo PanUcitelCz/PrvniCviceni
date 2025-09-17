@@ -1,387 +1,235 @@
+# README – Git & GitHub ve Visual Studio 2022 (Community)
 
-# Základy C# a Git — rychlý průvodce (README)
-
-> Krátký, praktický úvod do jazyka **C#**, principů **OOP** (zapouzdření, dědičnost, polymorfismus, abstrakce) a do práce se **Gitem** (commit, push, pull, branch atd.), včetně doporučených pravidel.
-
----
-
-## Obsah
-- [Jak číst a používat tento dokument](#jak-číst-a-používat-tento-dokument)
-- [1) Základy C#](#1-základy-c)
-  - [Hello, World](#hello-world)
-  - [Proměnné a typy](#proměnné-a-typy)
-  - [Podmínky a cykly](#podmínky-a-cykly)
-  - [Metody a parametry](#metody-a-parametry)
-  - [Třídy, struktury, rozhraní, záznamy](#třídy-struktury-rozhraní-záznamy)
-  - [Výjimky](#výjimky)
-  - [Kolekce a LINQ](#kolekce-a-linq)
-  - [Asynchronní programování (async/await)](#asynchronní-programování-asyncawait)
-- [2) OOP v kostce](#2-oop-v-kostce)
-  - [Zapouzdření (Encapsulation)](#zapouzdření-encapsulation)
-  - [Dědičnost (Inheritance)](#dědičnost-inheritance)
-  - [Polymorfismus (Polymorphism)](#polymorfismus-polymorphism)
-  - [Abstrakce (Abstraction)](#abstrakce-abstraction)
-  - [Kompozice vs. dědičnost](#kompozice-vs-dědičnost)
-  - [SOLID v jedné minutě](#solid-v-jedné-minutě)
-- [3) Git — základy a pravidla](#3-git--základy-a-pravidla)
-  - [Co je Git a důležité pojmy](#co-je-git-a-důležité-pojmy)
-  - [Základní příkazy](#základní-příkazy)
-  - [Pull, Fetch, Merge, Rebase — rozdíly](#pull-fetch-merge-rebase--rozdíly)
-  - [Doporučená pravidla pro práci s Gitem](#doporučená-pravidla-pro-práci-s-gitem)
-  - [Ukázkový workflow (GitHub Flow)](#ukázkový-workflow-github-flow)
-  - [.gitignore pro .NET/C#](#gitignore-pro-netc)
-  - [Užitečné aliasy do `.gitconfig`](#užitečné-aliasy-do-gitconfig)
-- [4) Mini‑úkoly k procvičení](#4-miniúkoly-k-procvičení)
+> Krátký slovníček, klikací postupy (VS 2022 + GitHub web) a úplný základ OOP s ukázkami v C# (.NET 9).
 
 ---
 
-## Jak číst a používat tento dokument
-- V kapitolách **C#** najdeš krátké vysvětlení a **běžné ukázky kódu**.
-- V kapitolách **Git** je vše, co potřebuješ k běžné práci s repozitářem a GitHubem, **včetně pravidel**.
-- Kopíruj kód do vlastního projektu (doporučené .NET 8.0). Pro rychlý start můžeš vytvořit novou konzolovou app:
-  ```bash
-  dotnet new console -n DemoApp
-  cd DemoApp
-  dotnet run
-  ```
+## 1) Rychlý slovníček pojmů (co to je a k čemu to je)
+
+- **Commit** – *uložení změn do **místního** repozitáře*. Vznikne záchytný bod s popisem změn (message).  
+  **Proč:** udržuje historii, umožní návrat zpět a sdílení změn (po Push).
+
+- **Push** – *odeslání tvých commitů na **GitHub***.  
+  **Proč:** až Push zpřístupní tvoje změny ostatním.
+
+- **Fetch** – *zjištění, co je nového na GitHubu* (nové commity) **bez** změny tvých souborů.  
+  **Proč:** bezpečná kontrola, jestli mezitím někdo něco neposlal.
+
+- **Pull** – *stáhne a **aplikuje** nové změny z GitHubu do tvého projektu*. (= Fetch + Merge)  
+  **Proč:** dostaneš se na aktuální stav týmu.
+
+- **Branch** (větev) – *oddělená linie vývoje*. Máš nezávislé commity mimo `main`.  
+  **Proč:** bezpečně zkoušíš úpravy, aniž bys rozbil hlavní větev.
+
+- **Merge** – *sloučení jedné větve do druhé* (např. `feature/ui` → `main`).  
+  **Proč:** zapracuješ hotovou práci z vedlejší větve do hlavní.
+
+- *(Doplňkově)* **Pull Request (PR)** – návrh na sloučení větve na GitHubu s možností kontroly a komentářů.  
+  **Proč:** týmová kontrola před Merge.
 
 ---
 
-## 1) Základy C#
+## 2) Pravidla pro psaní commit message (proč je to důležité)
+Dobrá zpráva u commitu šetří čas celé skupině – z historie musí být **jasné co a proč**.
 
-### Hello, World
-Moderní C# podporuje **top‑level statements** (bez třídy `Program`):
-```csharp
-using System;
+**Doporučení:**
+- Řádek 1: **stručný titulek do ~50 znaků**, v **rozkazovacím způsobu** (např. „Přidej třídu Vehicle“).  
+- Prázdný řádek.
+- Tělo: *co se změnilo a proč*, případně dopady / odkazy (např. „Fixes #12“).  
+- Nepiš „update“, „oprava“ – buď konkrétní.
+- Komituj **malé logické celky** (častěji a menší balíčky).
 
-Console.WriteLine("Ahoj světe!");
+**Příklady:**
 ```
-Klasický styl:
-```csharp
-using System;
+Špatně:  Update
+Dobře:   Přidej třídu Bicycle a přepiš Start() pro šlapání
+```
+```
+Špatně:  Oprava věcí
+Dobře:   Oprav diakritiku ve výpise Student.Popis()
+```
 
-namespace Demo
+---
+
+## 3) Jak to dělat ve **Visual Studio 2022** (klikací postupy)
+
+### 3.1 Commit a Push (poslání tvých změn na GitHub)
+1. Ulož změny v kódu (**Ctrl+S**).  
+2. Otevři **View → Git Changes** (nebo panel „Git Changes“).  
+3. Do **Message** napiš popis commitu.  
+4. Klikni **Commit All** *(uloží lokálně)* nebo **Commit All and Push** *(uloží a hned odešle na GitHub)*.  
+5. Pokud jsi dal jen Commit All, dokonči odeslání klikem na **Push** (v tomtéž panelu nebo **Git → Push**).
+
+> Pozn.: První odeslání nové větve bývá **Publish Branch** – VS ji vytvoří i na GitHubu.
+
+---
+
+### 3.2 Fetch a Pull (načtení cizích změn)
+- **Fetch:** **Git → Fetch** (nebo tlačítko *Fetch* v „Git Changes“). Jen zkontroluje, co je nového.  
+- **Pull:** **Git → Pull** (nebo *Pull origin/main*). Stáhne a **zapracuje** změny do tvých souborů.
+
+> Máš-li **lokální necommitnuté změny**, nejdřív je **Commit/Stash**, teprve pak Pull – předejdeš konfliktům.
+
+---
+
+### 3.3 Branch (větev) – vytvoření, přepnutí, smazání
+1. **Vytvoření:** **Git → New Branch…**  
+   - Název např. `feature/vehicle-demo`, **Base branch** `main`, **Create**.  
+2. **Přepnutí:** v **Git → Manage Branches…** dvojklik na větev, nebo stavová lišta dole.  
+3. Udělej změny → **Commit** → **Push/Publish Branch**.  
+4. **Smazání lokální větve:** **Git → Manage Branches…** → pravým na větev → **Delete** (po merge).
+
+---
+
+### 3.4 Merge (sloučení větve) přímo ve VS
+1. Ujisti se, že jsi na cílové větvi (typicky `main`).  
+2. **Git → Manage Branches…** → pravým na `main` → **Merge From…**.  
+3. Vyber zdrojovou větev (např. `feature/vehicle-demo`) → **Merge**.  
+4. Pokud vzniknou **conflicty**, VS ti je ukáže v „Merge Editoru“ – vyber správné části a ulož.  
+5. **Commit** výsledku sloučení (pokud VS neudělá automaticky) → **Push** na GitHub.
+
+---
+
+## 4) Jak to dělat na **GitHubu (web)**
+
+### 4.1 Odeslání práce z VS na GitHub
+- Po **Commit** klikni v VS na **Push/Publish Branch**. GitHubu se vytvoří/aktualizuje větev.
+
+### 4.2 Pull Request (doporučený způsob merge v týmu)
+1. Na GitHubu otevři svůj repozitář → **Compare & pull request** (po push větve).  
+2. Zkontroluj rozdíly, napiš popis „co a proč“.  
+3. **Create pull request** → počkej na review / schválení.  
+4. **Merge pull request** → **Confirm merge**.  
+5. (Volitelné) **Delete branch** na GitHubu.  
+6. Vrať se do VS a udělej **Pull**, aby se ti změny promítly lokálně do `main`.
+
+---
+
+## 5) Časté situace a tipy
+- **Chci jen zjistit, jestli je něco nového** → **Fetch**.  
+- **Chci stáhnout a použít nové změny** → **Pull**.  
+- **Chci poslat svou práci** → **Commit → Push**.  
+- **Nepracuju přímo v `main`** → vytvoř **branch**, pracuj tam, a pak **Merge / PR**.  
+- **.gitignore** – drž mimo Git složky `bin/`, `obj/`, uživatelské `.vs/` apod. (VS šablona to umí nastavit).
+
+---
+
+## 6) OOP – co to je a jednoduché ukázky v C# (.NET 9)
+
+**OOP (Object-Oriented Programming)** = způsob psaní programů pomocí **objektů**, které mají **stav** (data) a **chování** (metody).  
+Základní principy: **zapouzdření**, **dědičnost**, **polymorfismus** a **abstrakce**.
+
+### 6.1 Zapouzdření (encapsulation)
+Skrytí interních dat za veřejným rozhraním.
+```csharp
+public class Student
 {
-    internal class Program
+    private int _vek;                 // skrytý stav
+    public string Jmeno { get; set; } // veřejná vlastnost
+
+    public int Vek                   // kontrolovaný přístup k _vek
     {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Ahoj světe!");
-        }
+        get { return _vek; }
+        set { _vek = value < 0 ? 0 : value; }
+    }
+
+    public string Popis()
+    {
+        return "Student: " + Jmeno + ", věk: " + Vek;
     }
 }
 ```
 
-### Proměnné a typy
+### 6.2 Dědičnost (inheritance) a 6.3 Polymorfismus (polymorphism)
+Potomek přebírá vlastnosti a metody rodiče a může je **přepsat** (override).
 ```csharp
-int i = 42;
-double d = 3.14;
-bool ok = true;
-string s = "text";
-var auto = 123;      // typ odvozen z pravé strany (zde int)
-
-// Interpolace řetězce
-Console.WriteLine($"i={i}, d={d:F2}, ok={ok}, s={s}");
-
-// Konverze
-int parsed = int.Parse("123");        // vyhodí výjimku při neúspěchu
-if (int.TryParse("123", out int n))   // bezpečnější
+public class Vehicle
 {
-    Console.WriteLine(n);
-}
-```
-
-### Podmínky a cykly
-```csharp
-int x = 10;
-
-if (x > 5)
-    Console.WriteLine("větší než 5");
-else if (x == 5)
-    Console.WriteLine("rovno 5");
-else
-    Console.WriteLine("menší než 5");
-
-switch (x)
-{
-    case 1:
-    case 2:
-        Console.WriteLine("1 nebo 2");
-        break;
-    default:
-        Console.WriteLine("něco jiného");
-        break;
-}
-
-for (int k = 0; k < 3; k++)
-    Console.WriteLine(k);
-
-int[] arr = { 1, 2, 3 };
-foreach (var v in arr)
-    Console.WriteLine(v);
-```
-
-### Metody a parametry
-```csharp
-// Výchozí hodnoty a expression-bodied members
-static int Add(int a, int b = 0) => a + b;
-
-// ref/out parametry (používat střídmě)
-static void Increment(ref int value) => value++;
-static bool TryDivide(int a, int b, out int result)
-{
-    if (b == 0) { result = 0; return false; }
-    result = a / b; return true;
-}
-```
-
-### Třídy, struktury, rozhraní, záznamy
-```csharp
-public class BankAccount
-{
-    private decimal _balance;           // zapouzdřený stav
-
-    public decimal Balance              // vlastnost (property)
+    public virtual string Kind
     {
-        get => _balance;
-        private set
-        {
-            if (value < 0) throw new ArgumentOutOfRangeException(nameof(value));
-            _balance = value;
-        }
+        get { return "Vozidlo"; }
     }
 
-    public void Deposit(decimal amount) => Balance += amount;
-
-    public bool TryWithdraw(decimal amount)
+    public virtual string Start()
     {
-        if (amount <= _balance) { Balance -= amount; return true; }
-        return false;
+        return Kind + " startuje.";
     }
 }
 
-public interface IFlyable { void Fly(); }          // rozhraní
-
-public abstract class Animal                      // abstraktní třída
+public class Car : Vehicle
 {
-    public string Name { get; }
-    protected Animal(string name) => Name = name;
-    public abstract void Speak();                 // abstraktní metoda
+    public override string Kind
+    {
+        get { return "Auto"; }
+    }
+
+    public override string Start()
+    {
+        return Kind + " nastartovalo motor.";
+    }
 }
 
-public class Dog : Animal
+public class Bicycle : Vehicle
 {
-    public Dog(string name) : base(name) { }
-    public override void Speak() => Console.WriteLine($"{Name}: Haf!");
-}
+    public override string Kind
+    {
+        get { return "Kolo"; }
+    }
 
-public class Duck : Animal, IFlyable              // dědičnost + rozhraní
-{
-    public Duck(string name) : base(name) { }
-    public override void Speak() => Console.WriteLine($"{Name}: Kvak!");
-    public void Fly() => Console.WriteLine($"{Name} letí!");
+    public override string Start()
+    {
+        return Kind + " se rozjíždí šlápnutím do pedálů.";
+    }
 }
-
-// Záznam (record) – imutabilní nosič dat s hodnotovou rovností
-public record Point(int X, int Y);
 ```
-
-### Výjimky
+Použití (polymorfismus – společné rozhraní, různé chování):
 ```csharp
-try
+List<Vehicle> garage = new List<Vehicle>();
+garage.Add(new Car());
+garage.Add(new Bicycle());
+
+foreach (Vehicle v in garage)
 {
-    var text = File.ReadAllText("data.txt");
-}
-catch (FileNotFoundException ex)
-{
-    Console.Error.WriteLine($"Soubor nenalezen: {ex.FileName}");
-}
-catch (Exception ex)
-{
-    Console.Error.WriteLine($"Neočekávaná chyba: {ex.Message}");
-}
-finally
-{
-    Console.WriteLine("Hotovo.");
+    Console.WriteLine(v.Start()); // volá správnou přepsanou verzi
 }
 ```
 
-### Kolekce a LINQ
+### 6.4 Abstrakce (abstraction)
+Zdůraznění „co“ má objekt umět, ne „jak“ to uvnitř dělá.
 ```csharp
-using System.Collections.Generic;
-using System.Linq;
-
-var numbers = new List<int> { 1, 2, 3, 4, 5, 6 };
-var squaresOfEvens = numbers
-    .Where(n => n % 2 == 0)
-    .Select(n => n * n)
-    .ToList(); // {4, 16, 36}
-```
-
-### Asynchronní programování (async/await)
-```csharp
-using System.Net.Http;
-using System.Threading.Tasks;
-
-static async Task<string> FetchAsync(string url)
+public abstract class Shape
 {
-    using var client = new HttpClient();
-    using var resp = await client.GetAsync(url);
-    resp.EnsureSuccessStatusCode();
-    return await resp.Content.ReadAsStringAsync();
+    public abstract double GetArea();
 }
 
-// použití: var html = await FetchAsync("https://example.com");
+public class Rectangle : Shape
+{
+    public double Width { get; set; }
+    public double Height { get; set; }
+
+    public Rectangle(double width, double height)
+    {
+        this.Width = width;
+        this.Height = height;
+    }
+
+    public override double GetArea()
+    {
+        return Width * Height;
+    }
+}
 ```
 
 ---
 
-## 2) OOP v kostce
-
-### Zapouzdření (Encapsulation)
-- **Oddělení interního stavu** od veřejného rozhraní třídy.
-- Realizováno modifikátory přístupu (`private`, `public`, `protected`, `internal`) a vlastnostmi (get/set).
-- Cíl: **invarianty**, čitelný a bezpečný objekt.
-
-### Dědičnost (Inheritance)
-- Umožňuje tvořit hierarchii „**is‑a**“ (např. `Dog` **je** `Animal`).
-- Společné chování do předka, rozšíření v potomkovi.
-
-### Polymorfismus (Polymorphism)
-- Stejné API, **různé chování**.
-- Přes klíčová slova `virtual`, `override`, případně přes **rozhraní**.
-```csharp
-var animals = new List<Animal> { new Dog("Rex"), new Duck("Kvak") };
-foreach (var a in animals) a.Speak(); // volá správnou implementaci podle konkrétního typu
-```
-
-### Abstrakce (Abstraction)
-- Vypuštění detailů, ponechání podstaty (např. abstraktní třídy a rozhraní).
-- Umožňuje **nahraditelnost** a **testovatelnost**.
-
-### Kompozice vs. dědičnost
-- **Kompozice („has‑a“) často vítězí** nad dědičností: skládám objekty z menších částí.
-```csharp
-public class Car
-{
-    private readonly Engine _engine = new();
-    public void Drive() => _engine.Run();
-}
-```
-
-### SOLID v jedné minutě
-- **S**ingle Responsibility — jedna zodpovědnost na třídu.
-- **O**pen/Closed — rozšiřuj bez změny existujícího kódu.
-- **L**iskov Substitution — potomek musí být zaměnitelný za předka.
-- **I**nterface Segregation — rozhraní dělit na menší cílené celky.
-- **D**ependency Inversion — záviset na abstrakcích, ne na implementacích.
+## 7) Rychlý tahák (1 slide)
+- **Commit** – ulož změny lokálně (dobrý popis!).  
+- **Push** – pošli commity na GitHub.  
+- **Fetch** – jen zjisti, co je nového.  
+- **Pull** – stáhni a zapracuj změny.  
+- **Branch** – pracuj mimo `main`.  
+- **Merge** – slouč větev do `main` (ideálně přes **Pull Request**).
 
 ---
 
-## 3) Git — základy a pravidla
-
-### Co je Git a důležité pojmy
-- **Repozitář**: adresář s historii změn (složka `.git`).
-- **Pracovní strom** → **Staging (index)** → **Commit (historie)**.
-- **Branch** (větev), **tag**, **remote** (např. `origin`), **HEAD** (aktuální commit/branch).
-
-### Základní příkazy
-| Příkaz | Popis | Kdy použít |
-|---|---|---|
-| `git init` | Inicializuje nový repozitář | Začátek v prázdném adresáři |
-| `git clone <url>` | Klon vzdáleného repo | Převzetí existujícího projektu |
-| `git status` | Stav pracovního stromu a indexu | Před commitem, při řešení konfliktů |
-| `git add <soubor>` | Přidá změny do **stagingu** | Připravíš změny k commitu |
-| `git commit -m "..."` | Vytvoří commit | Zaznamenáš logickou jednotku práce |
-| `git log --oneline --graph --decorate` | Přehled historie | Rychlá orientace v commitech |
-| `git diff` / `git diff --staged` | Rozdíly v souboru | Před commitem / po `add` |
-| `git branch` / `git switch -c <větev>` | Správa větví | Tvorba a přepínání větví |
-| `git merge <větev>` | Sloučení historie | Sloučení feature do `main` |
-| `git rebase <větev>` | Přepsání báze | Linearizace historie (opatrně) |
-| `git fetch` | Stáhne nové commity **bez** sloučení | Synchronizace bez změny pracovního stromu |
-| `git pull` | = `fetch` + sloučení (merge/rebase) | Aktualizace lokální větve ze vzdálené |
-| `git push` | Odeslání commitů do remote | Sdílení práce |
-| `git stash` | Dočasně odloží změny | Rychlé přepnutí kontextu |
-| `git reset` / `git restore` | Vrácení změn (různé úrovně) | Opravy a úklid |
-| `git tag -a v1.0 -m "verze 1.0"` | Označení commitů verzí | Release body |
-
-### Pull, Fetch, Merge, Rebase — rozdíly
-- **fetch**: stáhne novinky z remote, ale **nemění** aktuální větev.
-- **pull**: `fetch` + sloučení do aktuální větve (default **merge**, lze `--rebase`).
-- **merge**: vytvoří nový „merge commit“ a zachová větvenou historii.
-- **rebase**: „přepíše bázi“ commitů na jiný vrchol (lineární historie). **Nikdy nerebasuj sdílenou/pushnutou větev**, pokud si nejsi jistý dopady.
-
-### Doporučená pravidla pro práci s Gitem
-1. **Malé a srozumitelné commity** (1 logická změna = 1 commit).
-2. **Slušné zprávy commitů** v **imperativu** (např. „Přidej validaci vstupu“, ne „Přidal jsem…“).
-3. **Branch naming**: `feature/…`, `bugfix/…`, `hotfix/…` (bez diakritiky, malá písmena, pomlčky/slashe).
-4. **.gitignore** drž aktuální, necommituj `bin/`, `obj/`, build artefakty a tajemství (API klíče).
-5. Před `push` na sdílené větve (např. `main`) **spusť testy** a **lint**.
-6. **Pull request**: popiš účel, odkaz na issue, přidej screenshoty, **self‑review** před žádostí o review.
-7. **Rebase vs. merge**: preferuj **rebase** na **lokálních feature větvích** pro čistotu; pro integraci do `main` bývá bezpečnější **merge** nebo **squash‑merge**.
-8. **Ne přepisovat historii** na sdílených větvích (`git push --force` jen výjimečně a domluveně).
-9. **Řešení konfliktů**: nejdřív pochop kontext, uprav, otestuj, **commit** s jasnou zprávou typu „Resolve merge conflict in …“.
-10. **Taguj releasy** (např. `v1.2.0`) a piš **CHANGELOG** (aspoň hlavní změny).
-
-### Ukázkový workflow (GitHub Flow)
-```bash
-# 0) Aktuální main
-git switch main
-git pull
-
-# 1) Nová feature větev
-git switch -c feature/login-form
-
-# 2) Práce + malé commity
-git add src/Login.cs
-git commit -m "Přidej základní formulář pro přihlášení"
-
-# 3) Průběžná synchronizace
-git fetch
-git rebase origin/main     # nebo git merge origin/main
-
-# 4) Odeslání a PR
-git push -u origin feature/login-form
-# Na GitHubu otevři Pull Request, popiš změny, požádej o review.
-
-# 5) Sloučení do main (merge/squash), smazání větve
-```
-
-### .gitignore pro .NET/C#
-V souboru `.gitignore` (zkráceně):
-```
-# Build artefakty
-bin/
-obj/
-
-# IDE
-.vs/
-.vscode/
-*.user
-*.suo
-
-# OS
-.DS_Store
-Thumbs.db
-```
-
-### Užitečné aliasy do `.gitconfig`
-```ini
-[alias]
-  s = status -sb
-  lg = log --oneline --graph --decorate --all
-  co = switch
-  cob = switch -c
-  ci = commit
-  st = status
-  df = diff
-  last = log -1 HEAD
-```
-
----
-
-## 4) Mini‑úkoly k procvičení
-- **C#**: Napiš třídu `Temperature` s vlastnostmi ve °C a °F (přepočet v setru/getru), validuj rozsah.
-- **OOP**: Vytvoř `Shape` (abstraktní) a potomky `Circle`, `Rectangle` s metodou `Area()` a polymorfním výpočtem.
-- **LINQ**: Z kolekce řetězců vyfiltruj ty delší než 3 znaky, setřiď abecedně a vypsat.
-- **Git**: Založ větev `feature/shapes`, commitni `Shape` řešení, otevři PR a po review slouč do `main`.
+*Autor: učební materiál k předmětu – práce s Git/GitHub ve VS 2022, C# .NET 9.*
